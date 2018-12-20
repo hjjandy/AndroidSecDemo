@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PRVictim</string>
+    <string name="sms_success">MSG Sending Succeeds</string>
+</resources>
