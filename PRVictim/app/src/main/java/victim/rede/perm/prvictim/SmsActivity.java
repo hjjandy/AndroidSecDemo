@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ public class SmsActivity extends AppCompatActivity implements Handler.Callback, 
     private Handler mHANDLER;
     private String mINFO;
     private String mNUM;
+    private String[] mPermissions = {"android.permission.SEND_SMS", "android.permission.READ_PHONE_STATE"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,15 +66,16 @@ public class SmsActivity extends AppCompatActivity implements Handler.Callback, 
 
     @Override
     public void run() {
-        if (ContextCompat.checkSelfPermission(SmsActivity.this,
-                "android.permission.SEND_SMS") != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    SmsActivity.this, "android.permission.SEND_SMS")) {
-                Toast.makeText(SmsActivity.this,
-                        "Allow Very Dangrouse Operation?", Toast.LENGTH_LONG).show();
+        boolean allGranted = true;
+        for (int i = 0; i < mPermissions.length; i++) {
+            if (ContextCompat.checkSelfPermission(SmsActivity.this, mPermissions[i])
+                    != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
             }
-            ActivityCompat.requestPermissions(SmsActivity.this,
-                    new String[]{"android.permission.SEND_SMS"}, 1);
+        }
+        if (!allGranted) {
+            ActivityCompat.requestPermissions(SmsActivity.this, mPermissions, 1);
         } else {
             sendSMS();
         }
@@ -86,7 +89,8 @@ public class SmsActivity extends AppCompatActivity implements Handler.Callback, 
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     sendSMS();
-                } else {
+                }
+                else {
                     Toast.makeText(SmsActivity.this,
                             "Permission Denied", Toast.LENGTH_LONG).show();
 
