@@ -86,14 +86,21 @@ public class SmsActivity extends AppCompatActivity implements Handler.Callback, 
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    sendSMS();
+                boolean allGranted = true;
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            allGranted = false;
+                            break;
+                        }
+                    }
                 }
-                else {
+                if (allGranted) {
+                    sendSMS();
+                } else {
+                    mHANDLER.sendEmptyMessage(0);
                     Toast.makeText(SmsActivity.this,
                             "Permission Denied", Toast.LENGTH_LONG).show();
-
                 }
                 break;
             default:
